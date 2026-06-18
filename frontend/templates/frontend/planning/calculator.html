@@ -1,0 +1,22 @@
+{% extends 'frontend/layout/base.html' %}
+
+{% block content %}
+<section class="max-width-600 mx-auto">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Оптимізація посівного плану</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.as_p }}
+                </div>
+                <button type="submit" class="btn btn-success w-100">
+                    Розрахувати ідеальний план
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

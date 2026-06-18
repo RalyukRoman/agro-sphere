@@ -1,0 +1,143 @@
+{% extends 'frontend/layout/base.html' %}
+
+{% block title %}
+    {% if object %}
+        Редагування поля: {{ object.name }}
+    {% else %}
+        Створення нового поля
+    {% endif %} 
+    - AgroSphere
+{% endblock %}
+
+{% block extra_css %}
+    {{ form.media.css }}
+    <style>
+        .dj_map_wrapper {
+            width: 100% !important;
+            display: block !important;
+        }
+
+        #id_geom_map {
+            width: 100% !important;
+            height: 550px !important; 
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .dj_map_wrapper p {
+            display: none !important;
+        }
+
+        .dj_map_wrapper .clear_features {
+            display: none !important;
+        }
+
+        #id_geom, .vSerializedField {
+            display: none !important;
+        }
+
+        .form-text {
+            display: block !important;
+            margin-top: 15px !important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {{ form.media.js }}
+
+    <section class="container-fluid py-4">
+        <header class="mb-4">
+            <h2 class="fw-bold text-success">
+                {% if object %}
+                    Редагування меж поля "{{ object.name }}"
+                {% else %}
+                    Малювання меж нового поля
+                {% endif %}
+            </h2>
+        </header>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            
+            <div class="row">
+                <article class="col-lg-8 mb-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-header bg-white py-3">
+                            <h3 class="h6 mb-0 fw-bold">
+                                <i class="bi bi-pencil-square"></i> 
+                                Контур поля
+                            </h3>
+                        </div>
+
+                        <div class="card-body p-2">
+                            {{ form.geom }}
+                            {% if form.geom.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.geom.errors }}
+                                </div>
+                            {% endif %}
+
+                            <div class="form-text mt-2 ps-2">
+                                <i class="bi bi-info-circle"></i> 
+                                Використовуйте інструменти на карті, щоб обвести межі вашої ділянки.
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <aside class="col-lg-4">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body p-4">
+                            <h3 class="h6 fw-bold mb-4 border-bottom pb-2">
+                                Параметри ділянки
+                            </h3>
+
+                            <div class="mb-3">
+                                <label for="{{ form.name.id_for_label }}" 
+                                    class="form-label fw-semibold">
+                                    {{ form.name.label }}
+                                </label>
+
+                                {{ form.name }}
+
+                                {% if form.name.errors %}
+                                    <div class="text-danger small">
+                                        {{ form.name.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="{{ form.crop_status.id_for_label }}" 
+                                       class="form-label fw-semibold">
+                                    {{ form.crop_status.label }}
+                                </label>
+                                
+                                {{ form.crop_status }}
+
+                                {% if form.crop_status.errors %}
+                                    <div class="text-danger small">
+                                        {{ form.crop_status.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <footer class="d-grid gap-2">
+                                <button type="submit" 
+                                        class="btn btn-success py-2 fw-bold">
+                                    Зберегти дані
+                                </button>
+
+                                <a href="{% url 'map_dashboard' %}" 
+                                   class="btn btn-outline-secondary">
+                                    Скасувати
+                                </a>
+                            </footer>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </form>
+    </section>
+{% endblock %}

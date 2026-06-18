@@ -1,0 +1,32 @@
+name: agrosphere-app
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      - POSTGRES_DB=agrosphere_db
+      - POSTGRES_USER=super_admin
+      - POSTGRES_PASSWORD=super_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=agrosphere_db
+      - DB_USER=super_admin
+      - DB_PASSWORD=super_password
+      - DB_PORT=5432
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
