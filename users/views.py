@@ -1,54 +1,47 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import AllowAny
-from rest_framework.authtoken.models import Token
-from .serializers import RegisterSerializer, LoginSerializer
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
+from django.shortcuts import redirect
+
+from geo_analytics.forms import CompanyForm
+from users.models import User
+from users.forms import UserLoginForm, UserProfileForm
+
+from django.views.generic import (
+    CreateView, 
+    UpdateView, 
+)
+
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin
+)
 
 
-class RegisterView(APIView):
-    """Контролер для реєстрації нового користувача."""
+class RegisterCompanyView(CreateView):
+    """Сторінка B2B реєстрації компанії та її адміністратора."""
 
-    permission_classes = [AllowAny]
+    template_name = 'frontend/auth/register.html'
+    form_class = CompanyForm
+    success_url = reverse_lazy('login')
 
-    def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-
-        if serializer.is_valid():
-            user = serializer.save()
-            token, _ = Token.objects.get_or_create(user=user)
-
-            return Response({
-                "message": "Користувача успішно зареєстровано",
-                "token": token.key,
-                "username": user.username
-            }, status=status.HTTP_201_CREATED)
-        
-        return Response(
-            serializer.errors, 
-            status=status.HTTP_400_BAD_REQUEST
-        )
+    def form_valid(self, form):
+        """Зберігає форму та перенаправляє на сторінку входу."""
+        form.save()
+        return redirect(self.success_url)
 
 
-class LoginView(APIView):
-    """Контролер для входу користувача."""
+class UserLoginView(LoginView):
+    """Сторінка входу до системи."""
+    template_name = 'frontend/auth/login.html'
+    authentication_form = UserLoginForm
 
-    permission_classes = [AllowAny]
 
-    def post(self, request):
-        serializer = LoginSerializer(data=request.data)
+class UserProfileView(LoginRequiredMixin, UpdateView):
+    """Редагування профілю поточного користувача."""
 
-        if serializer.is_valid():
-            user = serializer.validated_data['user']
-            token, _ = Token.objects.get_or_create(user=user)
+    model = User
+    form_class = UserProfileForm
+    template_name = 'frontend/accounts/profile.html'
+    success_url = reverse_lazy('user_profile')
 
-            return Response({
-                "token": token.key,
-                "username": user.username,
-                "role": user.role
-            }, status=status.HTTP_200_OK)
-        
-        return Response(
-            serializer.errors, 
-            status=status.HTTP_400_BAD_REQUEST
-        )
+    def get_object(self):
+        return self.request.user

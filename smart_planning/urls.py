@@ -1,13 +1,12 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import CropCultureViewSet, CropPlanViewSet, SmartPlanningViewSet
+from django.urls import path
 
-router = DefaultRouter()
+from .views import (
+    PlanCalculatorView, 
+    PlanResultsView,
+)
 
-router.register(r'crop-cultures', CropCultureViewSet)
-router.register(r'crop-plans', CropPlanViewSet)
-router.register(r'smart-planning', SmartPlanningViewSet, basename='smart-planning')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('planning/calculate/', PlanCalculatorView.as_view(), name='plan_calculate'),
+    path('planning/results/', PlanResultsView.as_view(), name='plan_results'),
 ]

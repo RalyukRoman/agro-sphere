@@ -1,64 +1,74 @@
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
+from django.urls import reverse_lazy
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 
-from .models import CropCulture, CropPlan
-from .services import CropSolverService
+from smart_planning.forms import SmartPlanningCalculateForm
+from smart_planning.models import CropPlan
 
-from .serializers import (
-    CropCultureSerializer, 
-    CropPlanSerializer
+import json
+
+from django.views.generic import (
+    TemplateView, 
+    FormView
+)
+
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin, 
 )
 
 
-class CropCultureViewSet(viewsets.ModelViewSet):
-    """Набір контролерів для перегляду та редагування культур."""
-    queryset = CropCulture.objects.all()
-    serializer_class = CropCultureSerializer
+class PlanCalculatorView(LoginRequiredMixin, FormView):
+    """Форма для розрахунку оптимального плану посіву."""
+    
+    form_class = SmartPlanningCalculateForm
+    template_name = 'smart_planning/calculator.html'
+    success_url = reverse_lazy('plan_results')
 
 
-class CropPlanViewSet(viewsets.ReadOnlyModelViewSet):
-    """Набір контролерів для перегляду історії планів посіву."""
-    queryset = CropPlan.objects.all()
-    serializer_class = CropPlanSerializer
+class PlanResultsView(LoginRequiredMixin, TemplateView):
+    """Сторінка результатів розрахунку з динамічними даними від CropSolverService."""
+    template_name = 'smart_planning/results.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        plan_id = self.request.GET.get('plan_id')
+        if not plan_id:
+            raise Http404("Параметр plan_id відсутній. Будь ласка, виконайте розрахунок спочатку.")
 
-class SmartPlanningViewSet(viewsets.GenericViewSet):
-    """Контролер для виконання складних операцій планування."""
-
-    @action(detail=False, methods=['post'])
-    def calculate(self, request) -> Response:
-        """Запустити алгоритм оптимізації."""
-
-        data = request.data
-        field_id = data.get('field_id')
-        budget_raw = data.get('budget')
-
-        try:
-            budget = float(budget_raw) if budget_raw is not None else None
-        except ValueError:
-            return Response(
-                {"error": "Поле budget має бути числовим"}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        if not field_id:
-            return Response(
-                {"error": "field_id є обов'язковим полем"}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        result = CropSolverService.calculate_optimal_plan(
-            field_id, budget
+        crop_plan = get_object_or_404(
+            CropPlan.objects.select_related('field', 'suggested_crop'), 
+            id=plan_id, 
+            field__company=self.request.user.company
         )
+        
+        chart_labels = []
+        chart_data = []
+        table_rows = []
 
-        if "error" in result:
-            return Response(
-                data=result, 
-                status=status.HTTP_422_UNPROCESSABLE_ENTITY
-            )
+        chart_labels.append(crop_plan.suggested_crop.name)
+        chart_data.append(float(crop_plan.field.area_hectares))
+        
+        table_rows.append({
+            'field': crop_plan.field.name,
+            'crop': crop_plan.suggested_crop.name,
+            'area': float(crop_plan.field.area_hectares),
+            'yield': float(crop_plan.expected_yield),
+            'costs': float(crop_plan.estimated_profit) * 0.30
+        })
 
-        return Response(
-            data=result, 
-            status=status.HTTP_200_OK
-        )
+        efficiency_rate = int(crop_plan.confidence_score * 100) if crop_plan.confidence_score else 100
+
+        calculated_data = {
+            'total_profit': float(crop_plan.estimated_profit),
+            'efficiency_rate': efficiency_rate,
+            'recommended_crop': crop_plan.suggested_crop.name,
+            'table_rows': table_rows
+        }
+
+        context['plan'] = calculated_data
+        
+        context['chart_labels_json'] = json.dumps(chart_labels)
+        context['chart_data_json'] = json.dumps(chart_data)
+        
+        return context

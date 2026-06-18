@@ -1,12 +1,18 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import CompanyViewSet, FieldViewSet
+from django.urls import path
 
-router = DefaultRouter()
+from .views import (
+    MapDashboardView, 
+    FieldAnalyticsView,
+    FieldCreateView, 
+    FieldUpdateView, 
+    FieldDeleteView,
+)
 
-router.register(r'companies', CompanyViewSet)
-router.register(r'fields', FieldViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('dashboard/', MapDashboardView.as_view(), name='map_dashboard'),
+    path('fields/add/', FieldCreateView.as_view(), name='field_add'),
+    path('fields/<uuid:pk>/edit/', FieldUpdateView.as_view(), name='field_edit'),
+    path('fields/<uuid:pk>/delete/', FieldDeleteView.as_view(), name='field_delete'),
+    path('fields/<uuid:pk>/analytics/', FieldAnalyticsView.as_view(), name='field_analytics'),
 ]

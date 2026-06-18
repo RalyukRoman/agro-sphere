@@ -6,13 +6,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('favicon.ico', lambda request: HttpResponse(status=204)),
 
-    path('api/v1/', include([
+    path('', include([
         path('', include('geo_analytics.urls')),
         path('', include('logistics.urls')),
         path('', include('smart_planning.urls')),
         path('', include('warehousing.urls')),
         path('', include('users.urls')),
+        path('', include('frontend.urls'))
     ])),
-
-    path('', include('frontend.urls')),
 ]

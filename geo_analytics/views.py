@@ -1,68 +1,102 @@
-from rest_framework import viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework import mixins
+from django.urls import reverse_lazy
+from django.http import Http404
 
-from .models import (
-    Company, 
-    Field, 
-    FieldMetricHistory
+from geo_analytics.models import Field, FieldMetricHistory
+from geo_analytics.forms import FieldForm, FieldMetricHistoryForm
+from warehousing.models import Warehouse
+
+from django.views.generic import (
+    TemplateView, 
+    CreateView,
+    DetailView, 
+    UpdateView, 
+    DeleteView
 )
 
-from .serializers import (
-    CompanySerializer, 
-    CompanyCreateWithAdminSerializer,
-    FieldSerializer, 
-    FieldMetricHistorySerializer
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin
 )
 
 
-class CompanyViewSet(
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet
-):
-    """Набір контролерів для моделі Field."""
+class MapDashboardView(LoginRequiredMixin, TemplateView):
+    """Дашборд з інтерактивною картою."""
+    template_name = 'geo_analytics/map_dashboard.html'
 
-    queryset = Company.objects.all()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['fields'] = Field.objects.filter(company=self.request.user.company)
+        context['warehouses'] = Warehouse.objects.filter(company=self.request.user.company)
+        return context
 
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return CompanyCreateWithAdminSerializer
-        return CompanySerializer
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        company_name = instance.name
+class FieldCreateView(LoginRequiredMixin, CreateView):
+    """Сторінка створення нового поля."""
+
+    model = Field
+    form_class = FieldForm
+    template_name = 'geo_analytics/field_editor.html'
+    success_url = reverse_lazy('map_dashboard')
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.company = self.request.user.company
+        return super().form_valid(form)
+
+
+class FieldUpdateView(LoginRequiredMixin, UpdateView):
+    """Сторінка редагування поля."""
+    
+    model = Field
+    form_class = FieldForm
+    template_name = 'geo_analytics/field_editor.html'
+    success_url = reverse_lazy('map_dashboard')
+
+
+class FieldDeleteView(LoginRequiredMixin, DeleteView):
+    """Сторінка підтвердження видалення поля."""
+
+    model = Field
+    template_name = 'geo_analytics/field_confirm_delete.html'
+    success_url = reverse_lazy('map_dashboard')
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        if self.request.user.is_authenticated and hasattr(self.request.user, 'company'):
+            return queryset.filter(company=self.request.user.company)
         
-        self.perform_destroy(instance)
-        
-        return Response(
-            {"message": f"Компанію '{company_name}' та всі пов'язані акаунти успішно видалено."},
-            status=status.HTTP_200_OK
-        )
+        raise Http404("Ви не маєте доступу до цього об'єкта або не авторизовані.")
 
 
-class FieldViewSet(viewsets.ModelViewSet):
-    """Набір контролерів для моделі Field."""
-    queryset = Field.objects.all()
-    serializer_class = FieldSerializer
+class FieldAnalyticsView(LoginRequiredMixin, DetailView):
+    """Детальна аналітика конкретного поля."""
 
-    @action(detail=True, methods=['get'], url_path='metrics')
-    def get_metrics(self, request, pk=None):
-        field = self.get_object()  
-        
-        metrics = FieldMetricHistory.objects.filter(
-            field=field
+    model = Field
+    template_name = 'geo_analytics/field_analytics.html'
+    context_object_name = 'field'
+
+    def get_context_data(self, **kwargs):
+        """Отримати інформацію про метрики поля."""
+
+        context = super().get_context_data(**kwargs)
+
+        context['metrics'] = FieldMetricHistory.objects.filter(
+            field=self.get_object()
         ).order_by('-date')
-        
-        serializer = FieldMetricHistorySerializer(metrics, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return context
 
 
-class FieldMetricHistoryViewSet(viewsets.ModelViewSet):
-    """Набір контролерів для моделі FieldMetricHistory."""
-    queryset = FieldMetricHistory.objects.all()
-    serializer_class = FieldMetricHistorySerializer
+class FieldMetricCreateView(LoginRequiredMixin, CreateView):
+    """Контролер для додавання нових метрик стану поля."""
 
+    model = FieldMetricHistory
+    form_class = FieldMetricHistoryForm
+    template_name = 'geo_analytics/metric_form.html'
+
+    def get_success_url(self):
+        """Повертає на сторінку аналітики відповідного поля."""
+        return reverse_lazy(
+            'field_analytics', 
+            kwargs={'pk': self.object.field.pk}
+        )
