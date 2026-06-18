@@ -47,7 +47,7 @@ class WarehouseDeleteView(LoginRequiredMixin, DeleteView):
     """Сторінка підтвердження видалення складу."""
 
     model = Warehouse
-    template_name = 'warehouses/warehouse_confirm_delete.html'
+    template_name = 'warehousing/warehouse_confirm_delete.html'
     success_url = reverse_lazy('warehouse_list')
 
     def get_queryset(self):
