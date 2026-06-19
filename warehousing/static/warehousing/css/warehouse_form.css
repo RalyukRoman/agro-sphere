@@ -1,0 +1,62 @@
+.dj_map_wrapper {
+    width: 100% !important;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+div[id$="_map"].dj_map {
+    width: 100% !important;
+    height: 400px !important;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+
+.vSerializedField {
+    display: block;
+    width: 100% !important;
+    height: 80px !important;
+    margin-top: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    background-color: #f8f9fa;
+    font-family: monospace;
+    font-size: 11px;
+    padding: 6px;
+    color: #6c757d;
+}
+
+.clear_features a {
+    color: #dc3545;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-block;
+    margin-top: 5px;
+}
+
+.clear_features a:hover {
+    text-decoration: underline;
+}
+
+.col-lg-4 input[type="text"], 
+.col-lg-4 input[type="number"],
+.col-lg-4 select {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.col-lg-4 input:focus, .col-lg-4 select:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .25);
+}

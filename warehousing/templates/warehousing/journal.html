@@ -1,122 +1,124 @@
-{% extends 'frontend/layout/base.html' %}
+{% extends 'layout/base.html' %}
 
 {% block title %}
-    Журнал операцій - AgroSphere
+    Журнал операцій | AgroSphere
 {% endblock %}
 
 {% block content %}
-<section class="container py-4">
-    <header class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold h3">
-                Журнал складських операцій
-            </h2>
+    <section class="container py-4">
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold h3">
+                    Журнал складських операцій
+                </h2>
 
-            <p class="text-muted mb-0">
-                Повна історія руху зерна по всіх складах компанії
-            </p>
-        </div>
+                <p class="text-muted mb-0">
+                    Повна історія руху зерна по всіх складах компанії
+                </p>
+            </div>
 
-        <div class="d-flex gap-2">
-            <a href="{% url 'transaction_add' %}" 
-               class="btn btn-warning fw-bold">
-                <i class="bi bi-plus-circle"></i> Нова операція
-            </a>
+            <div class="d-flex gap-2">
+                <a href="{% url 'transaction_add' %}" 
+                class="btn btn-warning fw-bold">
+                    <i class="bi bi-plus-circle"></i> 
+                    Нова операція
+                </a>
 
-            <a href="{% url 'warehouse_list' %}" 
-               class="btn btn-outline-secondary">
-                До списку складів
-            </a>
-        </div>
-    </header>
+                <a href="{% url 'warehouse_list' %}" 
+                class="btn btn-outline-secondary">
+                    До списку складів
+                </a>
+            </div>
+        </header>
 
-    <article class="card shadow-sm border-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th scope="col" class="ps-4">Дата та час</th>
-                        <th scope="col">Склад</th>
-                        <th scope="col">Партія / Культура</th>
-                        <th scope="col">Тип операції</th>
-                        <th scope="col">Вага (тонн)</th>
-                        <th scope="col" class="pe-4 text-end">ID Оператора</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for entry in entries %}
+        <article class="card shadow-sm border-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
                         <tr>
-                            <td class="ps-4">
-                                <span class="text-muted small">
-                                    {{ entry.created_at|date:"d.m.Y H:i" }}
-                                </span>
-                            </td>
-                            
-                            <td class="fw-bold">
-                                {{ entry.warehouse.name }}
-                            </td>
-
-                            <td>
-                                <div>{{ entry.batch.crop_type.name }}</div>
-                                <small class="text-muted">
-                                    Клас: {{ entry.batch.grain_class }}
-                                </small>
-                            </td>
-
-                            <td>
-                                {% if entry.entry_type == 'INCOMING' %}
-                                    <span class="badge bg-success-subtle text-success border 
-                                                 border-success-subtle px-3 py-2 uppercase">
-                                        Надходження
-                                    </span>
-                                {% elif entry.entry_type == 'OUTGOING' %}
-                                    <span class="badge bg-danger-subtle text-danger border 
-                                                 border-danger-subtle px-3 py-2 uppercase">
-                                        Списання
-                                    </span>
-                                {% else %}
-                                    <span class="badge bg-info-subtle text-info border 
-                                                 border-info-subtle px-3 py-2 uppercase">
-                                        Бронювання
-                                    </span>
-                                {% endif %}
-                            </td>
-
-                            <td class="fw-bold">
-                                {% if entry.entry_type == 'OUTGOING' %}
-                                    -
-                                {% else %}
-                                    +
-                                {% endif %}
-
-                                {{ entry.weight_tons|floatformat:2 }}
-                            </td>
-
-                            <td class="pe-4 text-end">
-                                <code class="small text-muted" 
-                                      title="{{ entry.operator_id }}">
-                                    {{ entry.operator_id|stringformat:".8s" }}...
-                                </code>
-                            </td>
+                            <th scope="col" class="ps-4">Дата та час</th>
+                            <th scope="col">Склад</th>
+                            <th scope="col">Партія / Культура</th>
+                            <th scope="col">Тип операції</th>
+                            <th scope="col">Вага (тонн)</th>
+                            <th scope="col" class="pe-4 text-end">ID Оператора</th>
                         </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="6" class="text-center py-5">
-                                <div class="text-muted">
-                                    <i class="bi bi-inbox fs-1 d-block mb-3"></i>
-                                    <p class="mb-0">Транзакцій ще не зафіксовано.</p>
-                                    
-                                    <a href="{% url 'transaction_add' %}" class="btn btn-sm btn-link text-warning p-0">
-                                        Створити першу операцію
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </article>
-</section>
+                    </thead>
+
+                    <tbody>
+                        {% for entry in entries %}
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="text-muted small">
+                                        {{ entry.created_at|date:"d.m.Y H:i" }}
+                                    </span>
+                                </td>
+                                
+                                <td class="fw-bold">
+                                    {{ entry.warehouse.name }}
+                                </td>
+
+                                <td>
+                                    <div>{{ entry.batch.crop_type.name }}</div>
+                                    <small class="text-muted">
+                                        Клас: {{ entry.batch.grain_class }}
+                                    </small>
+                                </td>
+
+                                <td>
+                                    {% if entry.entry_type == 'INCOMING' %}
+                                        <span class="badge bg-success-subtle text-success border 
+                                                    border-success-subtle px-3 py-2 uppercase">
+                                            Надходження
+                                        </span>
+                                    {% elif entry.entry_type == 'OUTGOING' %}
+                                        <span class="badge bg-danger-subtle text-danger border 
+                                                    border-danger-subtle px-3 py-2 uppercase">
+                                            Списання
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-info-subtle text-info border 
+                                                    border-info-subtle px-3 py-2 uppercase">
+                                            Бронювання
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="fw-bold">
+                                    {% if entry.entry_type == 'OUTGOING' %}
+                                        -
+                                    {% else %}
+                                        +
+                                    {% endif %}
+
+                                    {{ entry.weight_tons|floatformat:2 }}
+                                </td>
+
+                                <td class="pe-4 text-end">
+                                    <code class="small text-muted" 
+                                        title="{{ entry.operator_id }}">
+                                        {{ entry.operator_id|stringformat:".8s" }}...
+                                    </code>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                                        <p class="mb-0">Транзакцій ще не зафіксовано.</p>
+                                        
+                                        <a href="{% url 'transaction_add' %}" 
+                                        class="btn btn-sm btn-link text-warning p-0">
+                                            Створити першу операцію
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </article>
+    </section>
 {% endblock %}

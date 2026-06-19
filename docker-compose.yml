@@ -4,13 +4,13 @@ services:
   db:
     image: postgis/postgis:16-3.4
     environment:
-      - POSTGRES_DB=agrosphere_db
-      - POSTGRES_USER=super_admin
-      - POSTGRES_PASSWORD=super_password
+      - POSTGRES_DB=${POSTGRES_DB_NAME}
+      - POSTGRES_USER=${POSTGRES_DB_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "${POSTGRES_DB_PORT}:5432"
 
   web:
     build: .
@@ -20,11 +20,11 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DB_HOST=db
-      - DB_NAME=agrosphere_db
-      - DB_USER=super_admin
-      - DB_PASSWORD=super_password
-      - DB_PORT=5432
+      - DB_HOST=${POSTGRES_DB_HOST}
+      - DB_NAME=${POSTGRES_DB_NAME}
+      - DB_USER=${POSTGRES_DB_USER}
+      - DB_PASSWORD=${POSTGRES_DB_PASSWORD}
+      - DB_PORT=${POSTGRES_DB_PORT}
     depends_on:
       - db
 

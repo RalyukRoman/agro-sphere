@@ -1,8 +1,12 @@
-{% extends 'frontend/layout/base.html' %}
+{% extends 'layout/base.html' %}
 
-{% block extra_css %}
+{% block title %}
+    Карта об'єктів компанії | AgroSphere
+{% endblock %}
+
+{% block styles %}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>#map { height: 600px; border-radius: 8px; }</style>
+    <link href="{% static 'geo_analytics/css/map_dashboard.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -19,80 +23,25 @@
     </section>
 {% endblock %}
 
-{% block extra_js %}
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <script>
-        // Ініціалізація карти
-        const map = L.map('map').setView([48.3794, 31.1656], 6);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
-
-        const boundsGroup = L.featureGroup();
-
-        {% for field in fields %}
-            {% if field.geom %}
-                const geojsonData_{{ forloop.counter }} = {{ field.geom.json|safe }};
-                
-                const polygon_{{ forloop.counter }} = L.geoJSON(geojsonData_{{ forloop.counter }}, {
-                    style: {
-                        color: "#198754",
-                        weight: 3,
-                        opacity: 0.8,
-                        fillColor: "#198754",
-                        fillOpacity: 0.3
-                    }
-                })
-                .bindPopup(`
-                    <div style="font-family: sans-serif; font-size: 14px; min-width: 200px;">
-                        <h5 style="margin: 0 0 5px 0; color: #198754;">🌾 ${"{{ field.name|escapejs }}"}</h5>
-                        <hr style="margin: 8px 0; border: 0; border-top: 1px solid #dee2e6;">
-                        
-                        <div class="mb-2">
-                            <b>Площа:</b> ${"{{ field.area_hectares }}"} га<br>
-                            <b>Статус:</b> <span class="badge bg-secondary">${"{{ field.get_crop_status_display|escapejs }}"}</span>
-                        </div>
-                        
-                        <hr style="margin: 8px 0; border: 0; border-top: 1px solid #dee2e6;">
-                        
-                        <div class="d-flex justify-content-between gap-2 mt-2">
-                            <a href="{% url 'field_edit' field.pk %}" class="btn btn-sm btn-outline-success w-100">
-                                <i class="bi bi-pencil-square"></i> Змінити
-                            </a>
-                            <a href="{% url 'field_delete' field.pk %}" class="btn btn-sm btn-outline-danger w-100">
-                                <i class="bi bi-trash"></i> Видалити
-                            </a>
-                        </div>
-                    </div>
-                `)
-                .addTo(map);
-
-                polygon_{{ forloop.counter }}.on('mouseover', function (e) {
-                    this.setStyle({
-                        fillOpacity: 0.5,
-                        weight: 4,
-                        color: "#0f5132"
-                    });
-                });
-
-                polygon_{{ forloop.counter }}.on('mouseout', function (e) {
-                    this.setStyle({
-                        fillOpacity: 0.3,
-                        weight: 3,
-                        color: "#198754"
-                    });
-                });
-
-                boundsGroup.addLayer(polygon_{{ forloop.counter }});
-            {% endif %}
-        {% endfor %}
-
-        if (boundsGroup.getLayers().length > 0) {
-            map.fitBounds(boundsGroup.getBounds(), { padding: [40, 40] });
-        }
+{% block scripts %}    
+    <script id="fields-data" type="application/json">
+        [
+            {% for field in fields %}
+                {% if field.geom %}
+                    {
+                        "id": {{ field.pk }},
+                        "name": "{{ field.name|escapejs }}",
+                        "area": "{{ field.area_hectares }}",
+                        "status": "{{ field.get_crop_status_display|escapejs }}",
+                        "geom": {{ field.geom.json|safe }},
+                        "editUrl": "{% url 'field_edit' field.pk %}",
+                        "deleteUrl": "{% url 'field_delete' field.pk %}"
+                    }{% if not forloop.last %},{% endif %}
+                {% endif %}
+            {% endfor %}
+        ]
     </script>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="{% static 'geo_analytics/js/map_dashboard.js' %}"></script>
 {% endblock %}

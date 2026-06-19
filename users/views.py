@@ -17,9 +17,9 @@ from django.contrib.auth.mixins import (
 
 
 class RegisterCompanyView(CreateView):
-    """Сторінка B2B реєстрації компанії та її адміністратора."""
+    """Сторінка реєстрації компанії та її адміністратора."""
 
-    template_name = 'auth/register.html'
+    template_name = 'users/register_company.html'
     form_class = CompanyForm
     success_url = reverse_lazy('login')
 
@@ -31,7 +31,7 @@ class RegisterCompanyView(CreateView):
 
 class UserLoginView(LoginView):
     """Сторінка входу до системи."""
-    template_name = 'auth/login.html'
+    template_name = 'users/login.html'
     authentication_form = UserLoginForm
 
 

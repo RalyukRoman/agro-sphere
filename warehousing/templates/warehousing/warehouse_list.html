@@ -1,15 +1,23 @@
-{% extends 'frontend/layout/base.html' %}
+{% extends 'layout/base.html' %}
+
+{% block title %}
+    Список складів | AgroSphere
+{% endblock %}
 
 {% block content %}
     <section>
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between 
+                    align-items-center mb-4">
             <h2>Склади та елеватори</h2>
 
             <div class="d-flex gap-2">
-                <a href="{% url 'warehouse_add' %}" class="btn btn-primary">
-                    <i class="bi bi-plus-lg"></i> Додати склад
+                <a href="{% url 'warehouse_add' %}" 
+                   class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> 
+                    Додати склад
                 </a>
-                <a href="{% url 'transaction_add' %}" class="btn btn-warning">
+                <a href="{% url 'transaction_add' %}" 
+                   class="btn btn-warning">
                     Нова транзакція
                 </a>
             </div>
@@ -18,10 +26,13 @@
         <div class="row g-4">
             {% for warehouse in warehouses %}
                 <div class="col-md-4">
-                    <article class="card shadow-sm h-100 position-relative">
-                        <div class="card-body d-flex flex-column justify-content-between">
+                    <article class="card shadow-sm h-100 
+                                    position-relative">
+                        <div class="card-body d-flex flex-column 
+                                    justify-content-between">
                             <div>
-                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="d-flex justify-content-between 
+                                            align-items-start mb-2">
                                     <h5 class="card-title mb-0">
                                         {{ warehouse.name }}
                                     </h5>
@@ -39,7 +50,7 @@
                                 
                                 <div class="progress mb-3" style="height: 20px;">
                                     <div class="progress-bar bg-success" role="progressbar" 
-                                        style="width: {{ warehouse.current_balance_tons|default:0 }}%;">
+                                         style="width: {{ warehouse.current_balance_tons|default:0 }}%;">
                                         {{ warehouse.current_balance_tons }} т.
                                     </div>
                                 </div>

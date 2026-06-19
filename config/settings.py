@@ -1,16 +1,25 @@
 from pathlib import Path
+import environ
 import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1wj_1-@b$t7$^k7t)*md@kxcr@ke!h*w306@ort!57hhgvt(wk'
+env = environ.Env(
+    DEBUG=(bool, True),
+    SECRET_KEY=(str, 'django-insecure-1wj_1-@b$t7$^k7t)*md@kxcr@ke!h*w306@ort!57hhgvt(wk'),
+    ALLOWED_HOSTS=(list, []),
+    POSTGRES_DB_HOST=(str, 'localhost'),
+    POSTGRES_DB_NAME=(str, 'agrosphere_db'),
+    POSTGRES_DB_USER=(str, 'super_admin'),
+    POSTGRES_DB_PASSWORD=(str, 'super_password'),
+    POSTGRES_DB_PORT=(int, 5432) 
+)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-ALLOWED_HOSTS = []
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env('DEBUG')
+ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 
 # Application definition
@@ -67,12 +76,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.environ.get('DB_NAME', 'agrosphere_db'),
-        'USER': os.environ.get('DB_USER', 'super_admin'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'super_password'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('POSTGRES_DB_NAME'),
+        'USER': env('POSTGRES_DB_USER'),
+        'PASSWORD': env('POSTGRES_DB_PASSWORD'),
+        'HOST': env('POSTGRES_DB_HOST'),
+        'PORT': env('POSTGRES_DB_PORT'),
     }
 }
 
@@ -100,11 +109,8 @@ AUTH_USER_MODEL = 'users.User'
 # Internationalization
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 

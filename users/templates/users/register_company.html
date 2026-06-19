@@ -1,0 +1,69 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}
+    Реєстрація компанії | AgroSphere
+{% endblock %}
+
+{% block content %}
+<section class="row justify-content-center py-4">
+    <article class="col-md-8">
+        <div class="card shadow border-0">
+            <div class="card-body p-5">
+                <header class="text-center mb-4">
+                    <h2 class="fw-bold text-success">
+                        Реєстрація
+                    </h2>
+
+                    <p class="text-muted">
+                        Зареєструйте свою компанію та отримайте 
+                        доступ до інструментів моніторингу
+                    </p>
+                </header>
+                
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        {% for field in form %}
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ field.id_for_label }}" 
+                                       class="form-label fw-semibold">
+                                    {{ field.label }}
+                                </label>
+                                {{ field }}
+                                
+                                {% if field.help_text %}
+                                    <div class="form-text small">{{ field.help_text }}</div>
+                                {% endif %}
+                                
+                                {% if field.errors %}
+                                    <div class="text-danger small">
+                                        {{ field.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" 
+                                class="btn btn-success btn-lg w-100 fw-bold">
+                            Зареєструватись
+                        </button>
+                    </div>
+                </form>
+
+                <footer class="text-center border-top pt-3 mt-4">
+                    <p class="mb-0 text-muted">
+                        Вже маєте корпоративний аккаунт? 
+                        <a href="{% url 'login' %}" 
+                           class="text-success text-decoration-none fw-bold">
+                            Увійти
+                        </a>
+                    </p>
+                </footer>
+            </div>
+        </div>
+    </article>
+</section>
+{% endblock %}

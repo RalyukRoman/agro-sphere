@@ -1,0 +1,28 @@
+.dj_map_wrapper {
+    width: 100% !important;
+    display: block !important;
+}
+
+#id_geom_map {
+    width: 100% !important;
+    height: 550px !important; 
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.dj_map_wrapper p {
+    display: none !important;
+}
+
+.dj_map_wrapper .clear_features {
+    display: none !important;
+}
+
+#id_geom, .vSerializedField {
+    display: none !important;
+}
+
+.form-text {
+    display: block !important;
+    margin-top: 15px !important;
+}

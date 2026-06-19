@@ -1,2 +1,4 @@
 /.aiexclude
 /.venv
+/.env
+/.development

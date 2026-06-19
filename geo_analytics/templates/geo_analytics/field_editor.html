@@ -1,4 +1,4 @@
-{% extends 'frontend/layout/base.html' %}
+{% extends 'layout/base.html' %}
 
 {% block title %}
     {% if object %}
@@ -6,46 +6,14 @@
     {% else %}
         Створення нового поля
     {% endif %} 
-    - AgroSphere
+    | AgroSphere
 {% endblock %}
 
-{% block extra_css %}
-    {{ form.media.css }}
-    <style>
-        .dj_map_wrapper {
-            width: 100% !important;
-            display: block !important;
-        }
-
-        #id_geom_map {
-            width: 100% !important;
-            height: 550px !important; 
-            border-radius: 8px;
-            border: 1px solid #dee2e6;
-        }
-
-        .dj_map_wrapper p {
-            display: none !important;
-        }
-
-        .dj_map_wrapper .clear_features {
-            display: none !important;
-        }
-
-        #id_geom, .vSerializedField {
-            display: none !important;
-        }
-
-        .form-text {
-            display: block !important;
-            margin-top: 15px !important;
-        }
-    </style>
+{% block styles %}
+    <link href="{% static 'geo_analytics/css/field_editor.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-    {{ form.media.js }}
-
     <section class="container-fluid py-4">
         <header class="mb-4">
             <h2 class="fw-bold text-success">
@@ -80,7 +48,8 @@
 
                             <div class="form-text mt-2 ps-2">
                                 <i class="bi bi-info-circle"></i> 
-                                Використовуйте інструменти на карті, щоб обвести межі вашої ділянки.
+                                Використовуйте інструменти на карті, 
+                                щоб обвести межі вашої ділянки.
                             </div>
                         </div>
                     </div>
