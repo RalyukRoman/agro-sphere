@@ -1,4 +1,5 @@
 {% extends 'layout/base.html' %}
+{% load static %}
 
 {% block title %}
     Мій профіль | AgroSphere
@@ -9,7 +10,7 @@
         <article class="col-md-8 col-lg-6">
             <div class="card shadow border-0">
                 <header class="card-header bg-success text-white py-3">
-                    <h3 class="mb-0 h5">
+                    <h3 class="mb-3 h5">
                         Налаштування профілю
                     </h3>
 
@@ -101,7 +102,8 @@
                             {% endif %}
                         </div>
 
-                        <footer class="d-flex justify-content-between align-items-center">
+                        <footer class="d-flex justify-content-between 
+                                       align-items-center mb-4">
                             <button type="submit" 
                                     class="btn btn-success px-4">
                                 Зберегти зміни

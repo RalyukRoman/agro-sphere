@@ -91,6 +91,13 @@ class GrainIncomingCreateView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         form.save(operator=self.request.user)
         return super().form_valid(form)
+
+    def get_initial(self):
+        initial = super().get_initial()
+        warehouse_id = self.request.GET.get('warehouse_id')
+        if warehouse_id:
+            initial['warehouse'] = warehouse_id
+        return initial
     
     
 class GrainOutgoingCreateView(LoginRequiredMixin, FormView):
@@ -103,3 +110,10 @@ class GrainOutgoingCreateView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         form.save(operator=self.request.user)
         return super().form_valid(form)
+    
+    def get_initial(self):
+        initial = super().get_initial()
+        warehouse_id = self.request.GET.get('warehouse_id')
+        if warehouse_id:
+            initial['warehouse'] = warehouse_id
+        return initial
