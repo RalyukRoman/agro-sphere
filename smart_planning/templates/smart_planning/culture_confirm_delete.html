@@ -1,0 +1,48 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}
+    Видалення культури | AgroSphere
+{% endblock %}
+
+{% block content %}
+<section class="container py-5" style="max-width: 500px;">
+    <div class="card border-danger shadow">
+        <header class="card-header bg-danger text-white py-3">
+            <h4 class="mb-0 fw-bold h5">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                Підтвердження видалення
+            </h4>
+        </header>
+
+        <div class="card-body p-4 text-center">
+            <p class="fs-5">
+                Ви дійсно бажаєте безповоротно видалити культуру
+                <strong class="text-danger">
+                    «{{ object.name }}»
+                </strong> 
+                з бази даних?
+            </p>
+
+            <p class="text-muted small">
+                Це може вплинути на історичні розрахунки 
+                або пов'язані плани оптимізації посівів.
+            </p>
+            
+            <form method="post" 
+                  class="mt-4 d-flex gap-2 justify-content-center">
+                {% csrf_token %}
+
+                <a href="{% url 'culture_list' %}" 
+                   class="btn btn-light px-4 border">
+                    Ні, скасувати
+                </a>
+
+                <button type="submit"
+                        class="btn btn-danger px-4 fw-bold">
+                    Так, видалити
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,205 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}
+    {% if filter.instance.pk %}
+        Редагування культури
+    {% else %}
+        Додавання культури
+    {% endif %} 
+    | AgroSphere
+{% endblock %}
+
+{% block content %}
+    <section class="container py-5" style="max-width: 700px;">
+        <div class="card shadow border-0">
+            <header class="card-header bg-success text-white py-3">
+                <h4 class="mb-0 fw-bold">
+                    {% if form.instance.pk %}
+                        Редагування параметрів 
+                        «{{ form.instance.name }}»
+                    {% else %}
+                        Реєстрація нової культури
+                    {% endif %}
+                </h4>
+            </header>
+
+            <div class="card-body p-4">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger mb-4">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.name.id_for_label }}" 
+                                   class="form-label fw-semibold">
+                                {{ form.name.label }}
+                            </label>
+
+                            {{ form.name }}
+
+                            {% if form.name.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.name.errors|striptags }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.base_market_price.id_for_label }}" 
+                                   class="form-label fw-semibold">
+                                {{ form.base_market_price.label }}
+                            </label>
+
+                            {{ form.base_market_price }}
+
+                            {% if form.base_market_price.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.base_market_price.errors|striptags }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <h5 class="h6 text-muted border-bottom 
+                               pb-2 my-3 text-uppercase small">
+                        Температурний режим (°C)
+                    </h5>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label for="{{ form.optimal_temp_min.id_for_label }}" 
+                                   class="form-label small text-secondary">
+                                Мінімальна
+                            </label>
+
+                            <input type="number" 
+                                   name="optimal_temp_min" 
+                                   class="form-control" 
+                                   step="any" 
+                                   required 
+                                   id="{{ form.optimal_temp_min.id_for_label }}" 
+                                   value="{{ form.optimal_temp_min.value|default:'' }}">
+
+                            {% if form.optimal_temp_min.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.optimal_temp_min.errors|striptags }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-6">
+                            <label for="{{ form.optimal_temp_max.id_for_label }}" 
+                                   class="form-label small text-secondary">
+                                Максимальна
+                            </label>
+
+                            <input type="number" 
+                                   name="optimal_temp_max" 
+                                   class="form-control" 
+                                   step="any" 
+                                   required 
+                                   id="{{ form.optimal_temp_max.id_for_label }}" 
+                                   value="{{ form.optimal_temp_max.value|default:'' }}">
+
+                            {% if form.optimal_temp_max.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.optimal_temp_max.errors|striptags }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <h5 class="h6 text-muted border-bottom 
+                            pb-2 my-3 text-uppercase small">
+                        Показники вологи та продуктивності
+                    </h5>
+
+                    <div class="row mb-4">
+                        <div class="col-4">
+                            <label for="{{ form.optimal_moisture_min.id_for_label }}" 
+                                   class="form-label small text-secondary">
+                                Мін. вологість (%)
+                            </label>
+
+                            <input type="number" 
+                                   name="optimal_moisture_min" 
+                                   class="form-control" 
+                                   step="any" 
+                                   required 
+                                   id="{{ form.optimal_moisture_min.id_for_label }}" 
+                                   value="{{ form.optimal_moisture_min.value|default:'' }}">
+                            
+                            {% if form.optimal_moisture_min.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.optimal_moisture_min.errors|striptags }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-4">
+                            <label for="{{ form.optimal_moisture_max.id_for_label }}" 
+                                   class="form-label small text-secondary">
+                                Макс. вологість (%)
+                            </label>
+
+                            <input type="number" 
+                                   name="optimal_moisture_max" 
+                                   class="form-control" 
+                                   step="any" 
+                                   required 
+                                   id="{{ form.optimal_moisture_max.id_for_label }}" 
+                                   value="{{ form.optimal_moisture_max.value|default:'' }}">
+                            
+                            {% if form.optimal_moisture_max.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.optimal_moisture_max.errors|striptags }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-4">
+                            <label for="{{ form.average_yield_per_ha.id_for_label }}" 
+                                   class="form-label small text-secondary">
+                                Сер. врожайність (т/га)
+                            </label>
+
+                            <input type="number" 
+                                   name="average_yield_per_ha" 
+                                   class="form-control" 
+                                   step="any" 
+                                   required 
+                                   id="{{ form.average_yield_per_ha.id_for_label }}" 
+                                   value="{{ form.average_yield_per_ha.value|default:'' }}">
+                            
+                            {% if form.average_yield_per_ha.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.average_yield_per_ha.errors|striptags }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <footer class="d-flex justify-content-end 
+                                   gap-2 border-top pt-3">
+                        <a href="{% url 'culture_list' %}" 
+                           class="btn btn-outline-secondary px-4">
+                            Скасувати
+                        </a>
+
+                        <button type="submit" 
+                                class="btn btn-success px-5 
+                                       fw-bold shadow-sm">
+                            Зберегти культуру
+                        </button>
+                    </footer>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}

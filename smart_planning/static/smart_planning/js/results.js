@@ -1,4 +1,4 @@
-/** Initializing the crop distribution schedule */
+/** Ініціалізація графіка розподілу врожаю */
 function initDistributionChart(canvasEl, labels, data) {
     if (!canvasEl) return;
 
