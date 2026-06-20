@@ -35,4 +35,3 @@ http://localhost:8000/
 - geo_analytics/ — logic for working with fields and GIS data.
 - warehousing/ — warehouse and inventory management.
 - smart_planning/ — crop optimization module (Solver).
-- frontend/ — templates and user interface.
